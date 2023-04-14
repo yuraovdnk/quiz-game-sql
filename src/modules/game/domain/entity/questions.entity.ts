@@ -14,24 +14,28 @@ export class Question {
   @Column('varchar')
   body: string;
 
-  @CreateDateColumn()
-  createdAt: Date;
-
   @Column({
     type: 'character varying',
+    array: true,
     nullable: false,
   })
-  answers: string[];
+  correctAnswers: string[];
 
-  @Column()
-  published: false;
+  @Column('boolean')
+  published = false;
 
-  @UpdateDateColumn()
+  @CreateDateColumn({ type: 'timestamp with time zone' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ type: 'timestamp with time zone' })
   updatedAt: Date;
 
   private constructor() {}
 
-  static create() {
-    const sd = new Question();
+  static create(body: string, answers: string[]) {
+    const question = new Question();
+    question.body = body;
+    question.correctAnswers = answers;
+    return question;
   }
 }

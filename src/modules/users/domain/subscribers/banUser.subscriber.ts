@@ -1,15 +1,9 @@
-import {
-  EntitySubscriberInterface,
-  EventSubscriber,
-  InsertEvent,
-} from 'typeorm';
+import { EntitySubscriberInterface, EventSubscriber, InsertEvent } from 'typeorm';
 import { UsersBanList } from '../entity/userBanList.entity';
 import { AuthSession } from '../../../auth/domain/entity/authSession.entity';
 
 @EventSubscriber()
-export class BanUserSubscriber
-  implements EntitySubscriberInterface<UsersBanList>
-{
+export class BanUserSubscriber implements EntitySubscriberInterface<UsersBanList> {
   listenTo() {
     return UsersBanList;
   }

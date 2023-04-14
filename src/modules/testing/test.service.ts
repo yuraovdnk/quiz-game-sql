@@ -10,8 +10,6 @@ export class TestService {
       .map((i) => `"${i.tableName}"`)
       .join(', ');
 
-    await this.dataSource.query(
-      `TRUNCATE ${entities} RESTART IDENTITY CASCADE`,
-    );
+    await this.dataSource.query(`TRUNCATE ${entities} RESTART IDENTITY CASCADE`);
   }
 }

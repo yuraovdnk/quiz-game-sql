@@ -19,8 +19,7 @@ export class BasicStrategy extends PassportStrategy(Strategy, 'basic') {
   }
 
   public validate = async (req, username, password) => {
-    const isValidUserName =
-      this.configService.get('admin.userName') === username;
+    const isValidUserName = this.configService.get('admin.userName') === username;
     const isValidUserPassword =
       this.configService.get('admin.password') === password;
     if (isValidUserName && isValidUserPassword) {

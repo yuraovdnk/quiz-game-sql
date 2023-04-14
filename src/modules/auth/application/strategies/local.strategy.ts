@@ -32,10 +32,7 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
     );
     if (!candidate || !candidate.canLogin()) throw new UnauthorizedException();
 
-    const isValidPassword = await bcrypt.compare(
-      password,
-      candidate.passwordHash,
-    );
+    const isValidPassword = await bcrypt.compare(password, candidate.passwordHash);
     if (!isValidPassword) {
       throw new UnauthorizedException(
         mapErrors('login or password is not correct', 'auth'),

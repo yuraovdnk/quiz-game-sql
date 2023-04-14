@@ -5,10 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthService } from '../auth.service';
 
 export class GenerateTokensCommand {
-  constructor(
-    readonly deviceInfo: DeviceInfoType,
-    public readonly userId: string,
-  ) {}
+  constructor(readonly deviceInfo: DeviceInfoType, public readonly userId: string) {}
 }
 @CommandHandler(GenerateTokensCommand)
 export class GenerateTokensUseCase

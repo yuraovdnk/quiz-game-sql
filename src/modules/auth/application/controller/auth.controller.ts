@@ -47,18 +47,14 @@ export class AuthController {
 
   @Post('registration-confirmation')
   @HttpCode(204)
-  async confirmRegistration(
-    @Body('code') confirmCode: string,
-  ): Promise<boolean> {
+  async confirmRegistration(@Body('code') confirmCode: string): Promise<boolean> {
     return this.commandBus.execute(new ConfirmEmailCommand(confirmCode));
   }
 
   @Post('registration-email-resending')
   @HttpCode(204)
   async resendConfirmCode(@Body() emailDto: EmailDto): Promise<boolean> {
-    return this.commandBus.execute(
-      new ResendConfirmCodeCommand(emailDto.email),
-    );
+    return this.commandBus.execute(new ResendConfirmCodeCommand(emailDto.email));
   }
 
   @UseGuards(LocalAuthGuard)

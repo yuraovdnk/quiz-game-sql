@@ -14,10 +14,7 @@ export class JwtCookieGuard extends AuthGuard('jwt-cookie') {
 }
 
 @Injectable()
-export class JwtCookieStrategy extends PassportStrategy(
-  Strategy,
-  'jwt-cookie',
-) {
+export class JwtCookieStrategy extends PassportStrategy(Strategy, 'jwt-cookie') {
   constructor(
     private usersRepository: UsersRepository,
     private authRepository: AuthRepository,

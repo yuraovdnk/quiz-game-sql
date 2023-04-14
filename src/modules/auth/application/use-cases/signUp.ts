@@ -1,9 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CreateUserDto } from '../../../users/application/dto/request/create-user.dto';
-import {
-  BadRequestException,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { mapErrors } from '../../../../common/exceptions/mapErrors';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuid } from 'uuid';
@@ -34,10 +31,7 @@ export class SignUpUseCase implements ICommandHandler<SignUpCommand> {
     if (userByLogin)
       throw new BadRequestException(mapErrors('user is exist', 'login'));
 
-    const passwordHash = await bcrypt.hash(
-      command.registrationDto.password,
-      10,
-    );
+    const passwordHash = await bcrypt.hash(command.registrationDto.password, 10);
 
     const newUser: UserDbDto = {
       login: command.registrationDto.login,

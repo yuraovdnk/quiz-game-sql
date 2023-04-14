@@ -56,10 +56,7 @@ export class SaUsersController {
   //ban user
   @Put(':userId/ban')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async banUser(
-    @Param('userId') userId: string,
-    @Body() banUserDto: BanUserDto,
-  ) {
+  async banUser(@Param('userId') userId: string, @Body() banUserDto: BanUserDto) {
     await this.commandBus.execute(
       new BanUserCommand(userId, banUserDto.banReason, banUserDto.isBanned),
     );

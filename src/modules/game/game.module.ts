@@ -6,11 +6,12 @@ import { Question } from './domain/entity/questions.entity';
 import { CqrsModule } from '@nestjs/cqrs';
 import { GameRepository } from './infrastructure/repository/game.repository';
 import { CreateQuestionHandler } from './application/use-cases/create-question.case';
+import { DeleteQuestionHandler } from './application/use-cases/delete-question.case';
 
-const useCases = [CreateQuestionHandler];
+const useCases = [CreateQuestionHandler, DeleteQuestionHandler];
 @Module({
   imports: [CqrsModule, UserModule, TypeOrmModule.forFeature([Question])],
   controllers: [SaGameController],
-  providers: [GameRepository],
+  providers: [GameRepository, ...useCases],
 })
 export class GameModule {}

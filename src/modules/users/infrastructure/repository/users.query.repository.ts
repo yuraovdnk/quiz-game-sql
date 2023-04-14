@@ -14,13 +14,7 @@ export class UsersQueryRepository {
   async findById(userId: string): Promise<UserViewModel> {
     const user = await this.userEntity
       .createQueryBuilder('user')
-      .select([
-        'user.email',
-        'user.login',
-        'user.id',
-        'user.createdAt',
-        'banInfo',
-      ])
+      .select(['user.email', 'user.login', 'user.id', 'user.createdAt', 'banInfo'])
       .leftJoin('user.banInfo', 'banInfo')
       .where('user.id = :userId', { userId })
       .getOne();
@@ -30,13 +24,7 @@ export class UsersQueryRepository {
   async findAll(queryParams: SaQueryParamsDto) {
     const [users, totalCount] = await this.userEntity
       .createQueryBuilder('user')
-      .select([
-        'user.email',
-        'user.login',
-        'user.id',
-        'user.createdAt',
-        'banInfo',
-      ])
+      .select(['user.email', 'user.login', 'user.id', 'user.createdAt', 'banInfo'])
       .where(
         `((:ban = 'all') or
                (:ban = 'banned' and "banInfo"."isBanned" is not null) or
