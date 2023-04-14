@@ -30,7 +30,12 @@ const useCases = [
   SignOutUseCase,
 ];
 @Module({
-  imports: [DatabaseModule, TypeOrmModule.forFeature([AuthSession]), CqrsModule, UserModule],
+  imports: [
+    DatabaseModule,
+    TypeOrmModule.forFeature([AuthSession]),
+    CqrsModule,
+    UserModule,
+  ],
   controllers: [AuthController],
   providers: [
     AuthService,

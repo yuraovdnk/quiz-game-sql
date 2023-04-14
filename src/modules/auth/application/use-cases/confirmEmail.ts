@@ -7,11 +7,15 @@ export class ConfirmEmailCommand {
   constructor(public readonly confirmCode: string) {}
 }
 @CommandHandler(ConfirmEmailCommand)
-export class ConfirmEmailUseCase implements ICommandHandler<ConfirmEmailCommand> {
+export class ConfirmEmailUseCase
+  implements ICommandHandler<ConfirmEmailCommand>
+{
   constructor(private usersRepository: UsersRepository) {}
 
   async execute(command: ConfirmEmailCommand): Promise<any> {
-    const user = await this.usersRepository.findByConfirmCode(command.confirmCode);
+    const user = await this.usersRepository.findByConfirmCode(
+      command.confirmCode,
+    );
     if (!user) {
       throw new BadRequestException(mapErrors('Code is incorrect', 'code'));
     }

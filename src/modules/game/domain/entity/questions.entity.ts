@@ -17,6 +17,12 @@ export class Question {
   @CreateDateColumn()
   createdAt: Date;
 
+  @Column({
+    type: 'character varying',
+    nullable: false,
+  })
+  answers: string[];
+
   @Column()
   published: false;
 
@@ -25,5 +31,7 @@ export class Question {
 
   private constructor() {}
 
-  static create() {}
+  static create() {
+    const sd = new Question();
+  }
 }

@@ -7,7 +7,9 @@ export class ChangePasswordCommand {
   constructor(public readonly newPasswordDto: NewPasswordDto) {}
 }
 @CommandHandler(ChangePasswordCommand)
-export class ChangePasswordUseCase implements ICommandHandler<ChangePasswordCommand> {
+export class ChangePasswordUseCase
+  implements ICommandHandler<ChangePasswordCommand>
+{
   constructor(private usersRepository: UsersRepository) {}
 
   async execute(command: ChangePasswordCommand): Promise<any> {

@@ -9,7 +9,8 @@ import { UsersBanList } from '../../domain/entity/userBanList.entity';
 export class UsersRepository {
   constructor(
     @InjectRepository(User) private userEntity: Repository<User>,
-    @InjectRepository(UsersBanList) private banListEntity: Repository<UsersBanList>,
+    @InjectRepository(UsersBanList)
+    private banListEntity: Repository<UsersBanList>,
   ) {}
 
   async create(newUser: UserDbDto): Promise<User> {

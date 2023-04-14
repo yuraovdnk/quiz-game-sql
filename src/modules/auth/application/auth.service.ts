@@ -4,7 +4,10 @@ import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-  constructor(private configService: ConfigService, private jwtService: JwtService) {}
+  constructor(
+    private configService: ConfigService,
+    private jwtService: JwtService,
+  ) {}
 
   generateTokens(userId: string, deviceId: string) {
     const accessToken = this.jwtService.sign(

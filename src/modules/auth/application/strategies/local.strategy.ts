@@ -16,7 +16,10 @@ export class LocalAuthGuard extends AuthGuard('local') {
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
-  constructor(private authService: AuthService, private usersRepository: UsersRepository) {
+  constructor(
+    private authService: AuthService,
+    private usersRepository: UsersRepository,
+  ) {
     super({
       usernameField: 'loginOrEmail',
       passwordField: 'password',
@@ -24,12 +27,19 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
   }
 
   async validate(loginOrEmail: string, password: string): Promise<any> {
-    const candidate: User = await this.usersRepository.findByLoginOrEmail(loginOrEmail);
+    const candidate: User = await this.usersRepository.findByLoginOrEmail(
+      loginOrEmail,
+    );
     if (!candidate || !candidate.canLogin()) throw new UnauthorizedException();
 
-    const isValidPassword = await bcrypt.compare(password, candidate.passwordHash);
+    const isValidPassword = await bcrypt.compare(
+      password,
+      candidate.passwordHash,
+    );
     if (!isValidPassword) {
-      throw new UnauthorizedException(mapErrors('login or password is not correct', 'auth'));
+      throw new UnauthorizedException(
+        mapErrors('login or password is not correct', 'auth'),
+      );
     }
     return candidate;
   }

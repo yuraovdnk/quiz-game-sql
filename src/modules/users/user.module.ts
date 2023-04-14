@@ -12,16 +12,9 @@ import { BasicStrategy } from '../auth/application/strategies/basic.strategy';
 import { UsersBanList } from './domain/entity/userBanList.entity';
 import { BanUserUseCase } from './application/use-cases/banUser.use-case';
 
-const useCases = [
-  CreateUserUseCase,
-  RemoveUserUseCase,
-  BanUserUseCase,
-];
+const useCases = [CreateUserUseCase, RemoveUserUseCase, BanUserUseCase];
 @Module({
-  imports: [
-    CqrsModule,
-    TypeOrmModule.forFeature([User, UsersBanList]),
-  ],
+  imports: [CqrsModule, TypeOrmModule.forFeature([User, UsersBanList])],
   controllers: [SaUsersController],
   providers: [
     UsersRepository,

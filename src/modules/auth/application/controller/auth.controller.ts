@@ -1,4 +1,12 @@
-import { Body, Controller, Get, HttpCode, Post, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Post,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { CreateUserDto } from '../../../users/application/dto/request/create-user.dto';
 import { CurrentUser } from '../../../../common/decorators/current-user.decorator';
 import { Response } from 'express';
@@ -39,14 +47,18 @@ export class AuthController {
 
   @Post('registration-confirmation')
   @HttpCode(204)
-  async confirmRegistration(@Body('code') confirmCode: string): Promise<boolean> {
+  async confirmRegistration(
+    @Body('code') confirmCode: string,
+  ): Promise<boolean> {
     return this.commandBus.execute(new ConfirmEmailCommand(confirmCode));
   }
 
   @Post('registration-email-resending')
   @HttpCode(204)
   async resendConfirmCode(@Body() emailDto: EmailDto): Promise<boolean> {
-    return this.commandBus.execute(new ResendConfirmCodeCommand(emailDto.email));
+    return this.commandBus.execute(
+      new ResendConfirmCodeCommand(emailDto.email),
+    );
   }
 
   @UseGuards(LocalAuthGuard)

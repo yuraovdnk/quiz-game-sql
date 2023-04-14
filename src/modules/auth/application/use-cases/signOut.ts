@@ -4,7 +4,10 @@ import { AuthRepository } from '../../infrastructure/repository/auth.repository'
 import { UnauthorizedException } from '@nestjs/common';
 
 export class SignOutCommand {
-  constructor(public readonly userId: string, public readonly deviceInfo: DeviceInfoType) {}
+  constructor(
+    public readonly userId: string,
+    public readonly deviceInfo: DeviceInfoType,
+  ) {}
 }
 @CommandHandler(SignOutCommand)
 export class SignOutUseCase implements ICommandHandler<SignOutCommand> {

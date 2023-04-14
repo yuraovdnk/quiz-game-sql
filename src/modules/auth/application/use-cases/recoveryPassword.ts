@@ -10,7 +10,9 @@ export class RecoveryPasswordCommand {
 }
 
 @CommandHandler(RecoveryPasswordCommand)
-export class RecoveryPasswordUseCase implements ICommandHandler<RecoveryPasswordCommand> {
+export class RecoveryPasswordUseCase
+  implements ICommandHandler<RecoveryPasswordCommand>
+{
   constructor(
     private usersRepository: UsersRepository,
     private emailManager: EmailService,

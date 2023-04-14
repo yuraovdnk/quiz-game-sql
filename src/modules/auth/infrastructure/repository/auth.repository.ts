@@ -6,7 +6,9 @@ import { DeviceInfoType } from '../../../../common/decorators/device-meta.decota
 
 @Injectable()
 export class AuthRepository {
-  constructor(@InjectRepository(AuthSession) private authEntity: Repository<AuthSession>) {}
+  constructor(
+    @InjectRepository(AuthSession) private authEntity: Repository<AuthSession>,
+  ) {}
 
   async create(
     userId: string,
@@ -52,7 +54,10 @@ export class AuthRepository {
       .execute();
   }
 
-  async getByDeviceIdAndUserId(userId: string, deviceId: string): Promise<AuthSession> {
+  async getByDeviceIdAndUserId(
+    userId: string,
+    deviceId: string,
+  ): Promise<AuthSession> {
     const authSession = await this.authEntity
       .createQueryBuilder('auth')
       .select('auth')

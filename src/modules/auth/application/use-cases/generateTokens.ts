@@ -5,10 +5,15 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthService } from '../auth.service';
 
 export class GenerateTokensCommand {
-  constructor(readonly deviceInfo: DeviceInfoType, public readonly userId: string) {}
+  constructor(
+    readonly deviceInfo: DeviceInfoType,
+    public readonly userId: string,
+  ) {}
 }
 @CommandHandler(GenerateTokensCommand)
-export class GenerateTokensUseCase implements ICommandHandler<GenerateTokensCommand> {
+export class GenerateTokensUseCase
+  implements ICommandHandler<GenerateTokensCommand>
+{
   constructor(
     private authRepository: AuthRepository,
     private authService: AuthService,
@@ -32,7 +37,11 @@ export class GenerateTokensUseCase implements ICommandHandler<GenerateTokensComm
       command.deviceInfo.deviceId,
     );
     if (!authSession) {
-      await this.authRepository.create(command.userId, timeToken, command.deviceInfo);
+      await this.authRepository.create(
+        command.userId,
+        timeToken,
+        command.deviceInfo,
+      );
       return signedTokens;
     }
     authSession.refreshAuthSession(command.deviceInfo.deviceId, timeToken);

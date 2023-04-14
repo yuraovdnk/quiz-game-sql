@@ -19,7 +19,9 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
     ]);
 
     if (userByEmail || userByLogin) {
-      throw new BadRequestException(mapErrors('user is exist', 'login or email'));
+      throw new BadRequestException(
+        mapErrors('user is exist', 'login or email'),
+      );
     }
     const passwordHash = await bcrypt.hash(command.createUserDto.password, 10);
     const newUser = {
