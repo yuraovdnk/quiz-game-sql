@@ -1,12 +1,12 @@
-import { QueryParamsDto } from './query-params.dto';
 import { IsEnum } from 'class-validator';
+import { BaseFindOptionsDto } from '../../../../../common/dtos/base-find-options.dto';
 
 export enum BanStatusEnum {
   all = 'all',
   notBanned = 'notBanned',
   banned = 'banned',
 }
-export class SaQueryParamsDto extends QueryParamsDto {
+export class SaFindUsersOptions extends BaseFindOptionsDto {
   readonly searchLoginTerm = '';
   readonly searchEmailTerm = '';
 

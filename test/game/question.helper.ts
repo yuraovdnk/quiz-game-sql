@@ -13,7 +13,6 @@ export class QuestionHelper {
       .auth('admin', 'qwerty')
       .send(questionPayload)
       .expect(201);
-
     expect(question.body.body).toEqual(questionPayload.body);
     expect(question.body.correctAnswers).toEqual(questionPayload.correctAnswers);
     expect(question.body.id).toBeDefined();

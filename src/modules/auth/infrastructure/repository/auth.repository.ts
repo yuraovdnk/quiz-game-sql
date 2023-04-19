@@ -57,7 +57,7 @@ export class AuthRepository {
   async getByDeviceIdAndUserId(
     userId: string,
     deviceId: string,
-  ): Promise<AuthSession> {
+  ): Promise<AuthSession | null> {
     const authSession = await this.authEntity
       .createQueryBuilder('auth')
       .select('auth')
@@ -67,7 +67,7 @@ export class AuthRepository {
     return authSession;
   }
 
-  async getByDeviceId(deviceId: string): Promise<AuthSession> {
+  async getByDeviceId(deviceId: string): Promise<AuthSession | null> {
     const authSessions = await this.authEntity
       .createQueryBuilder('auth')
       .select('auth')

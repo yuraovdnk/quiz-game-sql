@@ -18,7 +18,7 @@ export class User {
   passwordHash: string;
 
   @Column({ type: 'varchar', nullable: true })
-  confirmCode: string;
+  confirmCode: string | null;
 
   @Column({ type: 'timestamp', nullable: true })
   expirationConfirmCode: Date;

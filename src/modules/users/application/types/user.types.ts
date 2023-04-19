@@ -7,8 +7,8 @@ export type UserDbDto = {
   isConfirmedEmail: boolean;
 };
 
-export class SortFieldUserModel {
-  login = 'login';
-  email = 'email';
-  createdAt = 'createdAt';
+export enum SortedFieldsUser {
+  login = 'login',
+  email = 'email',
+  createdAt = 'createdAt',
 }

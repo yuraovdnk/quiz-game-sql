@@ -48,6 +48,11 @@ describe('sa-question', () => {
         .delete(`/sa/quiz/questions/${question.id}`)
         .auth('admin', 'qwerty')
         .expect(204);
+
+      request(app.getHttpServer())
+        .get(`sa/quiz/questions/${question.id}`)
+        .auth('admin', 'qwerty')
+        .expect(464);
     });
   });
 });

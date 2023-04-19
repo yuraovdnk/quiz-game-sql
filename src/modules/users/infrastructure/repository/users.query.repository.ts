@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../domain/entity/user.entity';
 import { Repository } from 'typeorm';
-import { SortFieldUserModel } from '../../application/types/user.types';
-import { SaQueryParamsDto } from '../../../../common/dtos/sa-query-params.dto';
+import { SortedFieldsUser } from '../../application/types/user.types';
+import { SaFindUsersOptions } from '../../application/dto/request/sa-find-users.options';
 import { PageDto } from '../../../../common/utils/PageDto';
 import { UserViewModel } from '../../application/dto/response/user-view.model';
 
@@ -21,7 +21,7 @@ export class UsersQueryRepository {
     return new UserViewModel(user);
   }
 
-  async findAll(queryParams: SaQueryParamsDto) {
+  async findAll(queryParams: SaFindUsersOptions): Promise<PageDto<UserViewModel>> {
     const [users, totalCount] = await this.userEntity
       .createQueryBuilder('user')
       .select(['user.email', 'user.login', 'user.id', 'user.createdAt', 'banInfo'])
@@ -38,7 +38,7 @@ export class UsersQueryRepository {
       )
       .leftJoin('user.banInfo', 'banInfo')
       .orderBy(
-        `user.${queryParams.sortByField(SortFieldUserModel)}`,
+        `user.${queryParams.sortByField(SortedFieldsUser)}`,
         queryParams.order,
       )
       .limit(queryParams.pageSize)
@@ -47,7 +47,7 @@ export class UsersQueryRepository {
     const mapped = users.map((i) => new UserViewModel(i));
     return new PageDto(mapped, queryParams, totalCount);
   }
-  async getInfoByUserId(userId: string) {
+  async getInfoByUserId(userId: string): Promise<User | null> {
     const user = await this.userEntity
       .createQueryBuilder('user')
       .select([

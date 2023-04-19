@@ -20,7 +20,7 @@ import { RemoveUserCommand } from '../../use-cases/removeUser';
 import { BasicAuthGuard } from '../../../../auth/application/strategies/basic.strategy';
 import { BanUserCommand } from '../../use-cases/banUser.use-case';
 import { BanUserDto } from '../../dto/request/banUser.dto';
-import { SaQueryParamsDto } from '../../../../../common/dtos/sa-query-params.dto';
+import { SaFindUsersOptions } from '../../dto/request/sa-find-users.options';
 
 @UseGuards(BasicAuthGuard)
 @Controller('sa/users')
@@ -42,7 +42,7 @@ export class SaUsersController {
 
   //get all users
   @Get()
-  findAllUsers(@Query() queryParams: SaQueryParamsDto) {
+  findAllUsers(@Query() queryParams: SaFindUsersOptions) {
     return this.usersQueryRepository.findAll(queryParams);
   }
 

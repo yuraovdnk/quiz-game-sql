@@ -40,7 +40,7 @@ export class UsersRepository {
   async remove(entity: User) {
     await this.userEntity.remove(entity);
   }
-  async findById(userId: string): Promise<User> {
+  async findById(userId: string): Promise<User | null> {
     const user = await this.userEntity
       .createQueryBuilder('user')
       .select('user')
@@ -48,7 +48,7 @@ export class UsersRepository {
       .getOne();
     return user;
   }
-  async findByLogin(login: string): Promise<User> {
+  async findByLogin(login: string): Promise<User | null> {
     const user = await this.userEntity
       .createQueryBuilder('user')
       .select('user')
@@ -56,7 +56,7 @@ export class UsersRepository {
       .getOne();
     return user;
   }
-  async findByEmail(email: string): Promise<User> {
+  async findByEmail(email: string): Promise<User | null> {
     const user = await this.userEntity
       .createQueryBuilder('user')
       .select('user')
@@ -64,7 +64,7 @@ export class UsersRepository {
       .getOne();
     return user;
   }
-  async findByConfirmCode(confirmCode: string): Promise<User> {
+  async findByConfirmCode(confirmCode: string): Promise<User | null> {
     const user = await this.userEntity
       .createQueryBuilder('user')
       .select('user')

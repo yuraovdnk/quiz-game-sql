@@ -1,4 +1,4 @@
-import { QueryParamsDto } from '../dtos/query-params.dto';
+import { BaseFindOptionsDto } from '../dtos/base-find-options.dto';
 
 export class PageDto<T> {
   pagesCount: number;
@@ -6,7 +6,7 @@ export class PageDto<T> {
   pageSize: number;
   totalCount: number;
   items: T[];
-  constructor(items: any, queryParams: QueryParamsDto, totalCount?: number) {
+  constructor(items: any, queryParams: BaseFindOptionsDto, totalCount?: number) {
     this.pagesCount = Math.ceil(totalCount / queryParams.pageSize);
     this.page = queryParams.pageNumber;
     this.totalCount = totalCount;
