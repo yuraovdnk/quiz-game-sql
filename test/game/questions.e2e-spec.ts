@@ -24,6 +24,9 @@ describe('sa-question', () => {
     await app.init();
     await moduleFixture.get(TestService).clearDb();
   });
+  afterAll(() => {
+    app.close();
+  });
 
   describe('Create question', () => {
     it('should create question', () => {
