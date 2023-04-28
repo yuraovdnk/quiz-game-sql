@@ -26,7 +26,7 @@ jobs:
         run: yarn test:e2e
         
         env:
-          POSTGRES_PROD: "postgres://postgres:postgres@postgres:5432"
+          POSTGRES_DEV: "postgres://postgres:postgres@postgres:5432"
           
           
       
