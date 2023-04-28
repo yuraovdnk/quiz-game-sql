@@ -26,7 +26,7 @@ describe('sa-question', () => {
   });
   afterAll(() => {
     app.close();
-  });
+  }); ///
 
   describe('Create question', () => {
     it('should create question', () => {
