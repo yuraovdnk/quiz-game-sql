@@ -7,9 +7,6 @@ jobs:
     name: Tests
     runs-on: ubuntu-latest
     steps:
-      - name: output vars
-        run: echo "tokennnnnnfn ${{vars.POSTGRES_PROD}}"
-    
       - name: Checkout
         uses: actions/checkout@v3
 
