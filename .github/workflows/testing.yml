@@ -1,5 +1,7 @@
 name: Test App
 on: push
+env: 
+  POSTGRES_PROD: ${{secrets.POSTGRES_PROD}}
 jobs:
   tests:
     name: Tests
