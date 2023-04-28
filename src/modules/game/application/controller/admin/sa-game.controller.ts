@@ -23,7 +23,8 @@ import { UpdateQuestionCommand } from '../../use-cases/update-question.case';
 import { UpdateQuestionDto } from '../../dto/request/update-question.dto';
 import { SaFindGamesOptionsDto } from '../../dto/request/sa-find-games-options.dto';
 import { Question } from '../../../domain/entity/questions.entity';
-import { PublishQuestionCommand } from '../../use-cases/pubish-question.case';
+import { PublishQuestionCommand } from '../../use-cases/publish-question.case';
+import { PageDto } from '../../../../../common/utils/PageDto';
 
 @UseGuards(BasicAuthGuard)
 @Controller('sa/quiz/questions')
@@ -31,7 +32,9 @@ export class SaGameController {
   constructor(private commandBus: CommandBus, private gameRepo: GameRepository) {}
 
   @Get()
-  async getAll(@Query() findOptions: SaFindGamesOptionsDto): Promise<Question[]> {
+  async getAll(
+    @Query() findOptions: SaFindGamesOptionsDto,
+  ): Promise<PageDto<Question>> {
     return this.gameRepo.getAll(findOptions);
   }
 
@@ -55,7 +58,9 @@ export class SaGameController {
       new DeleteQuestionCommand(questionId),
     );
   }
+
   @Put(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async updateQuestion(
     @Param('id', ParseUUIDPipe) questionId: string,
     @Body() updateQuestionDto: UpdateQuestionDto,

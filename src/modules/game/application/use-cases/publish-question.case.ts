@@ -19,6 +19,7 @@ export class PublishQuestionHandler
     const question = await this.gameRepo.getById(command.questionId);
     if (!question) throw new NotFoundException();
     question.published = command.publishStatus;
+
     return this.gameRepo.save(question);
   }
 }

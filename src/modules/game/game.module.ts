@@ -8,7 +8,7 @@ import { GameRepository } from './infrastructure/repository/game.repository';
 import { CreateQuestionHandler } from './application/use-cases/create-question.case';
 import { DeleteQuestionHandler } from './application/use-cases/delete-question.case';
 import { UpdateQuestionHandler } from './application/use-cases/update-question.case';
-import { PublishQuestionHandler } from './application/use-cases/pubish-question.case';
+import { PublishQuestionHandler } from './application/use-cases/publish-question.case';
 
 const useCases = [
   CreateQuestionHandler,

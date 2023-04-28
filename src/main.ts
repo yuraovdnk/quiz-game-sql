@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { useContainer } from 'class-validator';
 import cookieParser from 'cookie-parser';
 import { mapValidationErrors } from './common/exceptions/mapErrors';
@@ -9,7 +9,7 @@ import {
   HttpExceptionFilter,
 } from './common/exceptions/exception.filter';
 
-export const createApp = async (app) => {
+export const createApp = async (app): Promise<INestApplication> => {
   app.enableCors();
   app.use(cookieParser());
   useContainer(app.select(AppModule), { fallbackOnErrors: true });

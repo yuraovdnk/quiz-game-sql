@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
+import {
+  ArrayNotEmpty,
+  IsNotEmpty,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class UpdateQuestionDto {
   @IsString()
@@ -6,5 +12,6 @@ export class UpdateQuestionDto {
   @MaxLength(500)
   @MinLength(10)
   body: string;
+  @ArrayNotEmpty()
   correctAnswers: string[];
 }

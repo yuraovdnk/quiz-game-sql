@@ -4,27 +4,40 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Question } from '../../domain/entity/questions.entity';
 import { Repository } from 'typeorm';
 import { SaFindGamesOptionsDto } from '../../application/dto/request/sa-find-games-options.dto';
-import { SortedFieldsUser } from '../../../users/application/types/user.types';
 import { SortedFieldsGame } from '../../application/types/game.types';
-///extends
+import { PageDto } from '../../../../common/utils/PageDto';
+import { BaseRepository } from './baseRepository';
+
 @Injectable()
-export class GameRepository {
+export class GameRepository extends BaseRepository<Question> {
   constructor(
     @InjectRepository(Question) private questionRepo: Repository<Question>,
-  ) {}
-  async getAll(findOptions: SaFindGamesOptionsDto) {
-    const queryBuilder = this.questionRepo
+  ) {
+    super(questionRepo);
+  }
+
+  async getAll(findOptions: SaFindGamesOptionsDto): Promise<PageDto<Question>> {
+    const [questions, totalCount] = await this.questionRepo
       .createQueryBuilder('g')
       .select()
-      .where('g.body like :bodySearchTerm', {
-        bodySearchTerm: `%${findOptions.bodySearchTerm}%`,
-      })
+      .where(
+        `g.body like :bodySearchTerm
+                and (:publishedStatus = 'all'
+                or (:publishedStatus = 'published' and g.published = true)
+                or (:publishedStatus = 'notPublished' and g.published = false))
+      `,
+        {
+          bodySearchTerm: `%${findOptions.bodySearchTerm}%`,
+          publishedStatus: findOptions.publishedStatus,
+        },
+      )
       .orderBy(`"${findOptions.sortByField(SortedFieldsGame)}"`, findOptions.order)
       .limit(findOptions.pageSize)
       .offset(findOptions.skip)
-      .getMany();
-    return queryBuilder;
+      .getManyAndCount();
+    return new PageDto(questions, findOptions, totalCount);
   }
+
   async getById(id: string): Promise<Question | null> {
     return this.questionRepo.findOneBy({ id });
   }
@@ -36,11 +49,5 @@ export class GameRepository {
     );
     await this.questionRepo.save(question);
     return question;
-  }
-  async delete(question: Question) {
-    await this.questionRepo.remove(question);
-  }
-  async save(entity: Question) {
-    await this.questionRepo.save(entity);
   }
 }
