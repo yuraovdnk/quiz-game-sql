@@ -16,7 +16,7 @@ import { GameModule } from './modules/game/game.module';
 export const configModule = ConfigModule.forRoot({
   load: [getConfig],
   isGlobal: true,
-  envFilePath: ['.env'],
+  envFilePath: ['.env', '.env.test'],
 });
 @Module({
   imports: [

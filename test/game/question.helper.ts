@@ -10,7 +10,7 @@ export class QuestionHelper {
     };
     const question = await request(app.getHttpServer())
       .post('/sa/quiz/questions')
-      .auth('admin', 'qwerty')
+      .auth(process.env.USER_NAME, process.env.PASSWORD)
       .send(questionPayload)
       .expect(201);
     expect(question.body.body).toEqual(questionPayload.body);

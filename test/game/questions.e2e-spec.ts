@@ -24,26 +24,23 @@ describe('sa-question', () => {
     await app.init();
     await moduleFixture.get(TestService).clearDb();
   });
-  afterAll(async () => {
-    await app.close();
-  }); ///
 
   describe('Create question', () => {
-    it('should create question', () => {
-      request(app.getHttpServer())
+    it('should create question', async () => {
+      await request(app.getHttpServer())
         .post('/sa/quiz/questions')
-        .auth('admin', 'qwerty')
+        .auth(process.env.USER_NAME, process.env.PASSWORD)
         .send({
-          body: 'sdsadas',
-          correctAnswers: ['wqeqweq', '42342342'],
+          body: 'sdsadas Illya Stepa',
+          correctAnswers: ['wqeqweqvxcvxv', '42342342'],
         })
         .expect(201);
     });
 
-    it('should not create question because payload incorrect', () => {
-      request(app.getHttpServer())
+    it('should not create question because payload incorrect', async () => {
+      await request(app.getHttpServer())
         .post('/sa/quiz/questions')
-        .auth('admin', 'qwerty')
+        .auth(process.env.USER_NAME, process.env.PASSWORD)
         .send({
           body: 'sda',
           correctAnswers: ['string', 'terrew'],
@@ -57,19 +54,19 @@ describe('sa-question', () => {
       const question = await QuestionHelper.createQuestion(app);
       await request(app.getHttpServer())
         .delete(`/sa/quiz/questions/${question.id}`)
-        .auth('admin', 'qwerty')
+        .auth(process.env.USER_NAME, process.env.PASSWORD)
         .expect(204);
 
       await request(app.getHttpServer())
         .get(`/sa/quiz/questions/${question.id}`)
-        .auth('admin', 'qwerty')
+        .auth(process.env.USER_NAME, process.env.PASSWORD)
         .expect(404);
     });
     it('shouldn`t delete', async function () {
       const fakeId = uuid();
       await request(app.getHttpServer())
         .delete(`/sa/quiz/questions/${fakeId}`)
-        .auth('admin', 'qwerty')
+        .auth(process.env.USER_NAME, process.env.PASSWORD)
         .expect(404);
     });
   });
@@ -84,7 +81,7 @@ describe('sa-question', () => {
       await request(app.getHttpServer())
         .put(baseUrl + question.id)
         .send(fakeData)
-        .auth('admin', 'qwerty')
+        .auth(process.env.USER_NAME, process.env.PASSWORD)
         .expect(204);
     });
 
@@ -97,7 +94,7 @@ describe('sa-question', () => {
       await request(app.getHttpServer())
         .put(`/sa/quiz/questions/` + question.id)
         .send(fakeData)
-        .auth('admin', 'qwerty')
+        .auth(process.env.USER_NAME, process.env.PASSWORD)
         .expect(400);
     });
 
@@ -110,7 +107,7 @@ describe('sa-question', () => {
       await request(app.getHttpServer())
         .put(baseUrl + fakeId)
         .send(fakeData)
-        .auth('admin', 'qwerty')
+        .auth(process.env.USER_NAME, process.env.PASSWORD)
         .expect(404);
     });
   });
@@ -126,7 +123,7 @@ describe('sa-question', () => {
 
       const questions = await request(app.getHttpServer())
         .get(`${baseUrl}?pageSize=${pageSize}`)
-        .auth('admin', 'qwerty')
+        .auth(process.env.USER_NAME, process.env.PASSWORD)
         .expect(200);
       const resBody: PageDto<Question> = questions.body;
 
