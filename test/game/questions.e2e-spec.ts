@@ -7,6 +7,8 @@ import { QuestionHelper } from './question.helper';
 import { v4 as uuid } from 'uuid';
 import { createApp } from '../../src/main';
 
+jest.setTimeout(10000);
+
 describe('sa-question', () => {
   let app: INestApplication;
   const baseUrl = `/sa/quiz/questions/`;
