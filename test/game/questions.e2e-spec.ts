@@ -6,15 +6,14 @@ import { TestService } from '../../src/modules/testing/test.service';
 import { QuestionHelper } from './question.helper';
 import { v4 as uuid } from 'uuid';
 import { createApp } from '../../src/main';
-import { PageDto } from '../../src/common/utils/PageDto';
-import { Question } from '../../src/modules/game/domain/entity/questions.entity';
 
 describe('sa-question', () => {
   let app: INestApplication;
   const baseUrl = `/sa/quiz/questions/`;
+  let moduleFixture: TestingModule = null;
 
-  beforeEach(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
+  beforeAll(async () => {
+    moduleFixture = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
 
@@ -22,8 +21,12 @@ describe('sa-question', () => {
     app = await createApp(app);
 
     await app.init();
+  });
+
+  beforeEach(async () => {
     await moduleFixture.get(TestService).clearDb();
   });
+
   afterAll(async () => {
     await app.close();
   });
