@@ -50,7 +50,5 @@ const useCases = [
   exports: [AuthRepository],
 })
 export class AuthModule {
-  constructor() {
-    console.log('AuthModule init');
-  }
+  constructor() {}
 }

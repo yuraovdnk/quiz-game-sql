@@ -26,7 +26,5 @@ const useCases = [CreateUserUseCase, RemoveUserUseCase, BanUserUseCase];
   exports: [UsersRepository, UsersQueryRepository],
 })
 export class UserModule {
-  constructor() {
-    console.log('UserModule init');
-  }
+  constructor() {}
 }
