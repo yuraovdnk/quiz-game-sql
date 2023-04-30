@@ -6,6 +6,8 @@ import { TestService } from '../../src/modules/testing/test.service';
 import { QuestionHelper } from './question.helper';
 import { v4 as uuid } from 'uuid';
 import { createApp } from '../../src/main';
+import { PageDto } from '../../src/common/utils/PageDto';
+import { Question } from '../../src/modules/game/domain/entity/questions.entity';
 
 jest.setTimeout(10000);
 
@@ -121,23 +123,23 @@ describe('sa-question', () => {
   });
 
   describe('get questions', () => {
-    // it('should get all', async function () {
-    //   const createdQuestionsCount = 10;
-    //   for (let i = 1; i <= createdQuestionsCount; i++) {
-    //     await QuestionHelper.createQuestion(app);
-    //   }
-    //
-    //   const pageSize = 1;
-    //
-    //   const questions = await request(app.getHttpServer())
-    //     .get(`${baseUrl}?pageSize=${pageSize}`)
-    //     .auth(process.env.USER_NAME, process.env.PASSWORD)
-    //     .expect(200);
-    //   const resBody: PageDto<Question> = questions.body;
-    //
-    //   expect(resBody.pageSize).toEqual(pageSize);
-    //   expect(resBody.totalCount).toEqual(createdQuestionsCount);
-    //   expect(resBody.pagesCount).toEqual(pageSize * resBody.totalCount);
-    // });
+    it('should get all', async function () {
+      const createdQuestionsCount = 10;
+      for (let i = 1; i <= createdQuestionsCount; i++) {
+        await QuestionHelper.createQuestion(app);
+      }
+
+      const pageSize = 1;
+
+      const questions = await request(app.getHttpServer())
+        .get(`${baseUrl}?pageSize=${pageSize}`)
+        .auth(process.env.USER_NAME, process.env.PASSWORD)
+        .expect(200);
+      const resBody: PageDto<Question> = questions.body;
+
+      expect(resBody.pageSize).toEqual(pageSize);
+      expect(resBody.totalCount).toEqual(createdQuestionsCount);
+      expect(resBody.pagesCount).toEqual(pageSize * resBody.totalCount);
+    });
   });
 });

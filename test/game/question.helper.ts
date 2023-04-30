@@ -15,6 +15,7 @@ export class QuestionHelper {
       .expect(201);
     expect(question.body.body).toEqual(questionPayload.body);
     expect(question.body.correctAnswers).toEqual(questionPayload.correctAnswers);
+    expect(question.body.updatedAt).toBeNull();
     expect(question.body.id).toBeDefined();
 
     return question.body as QuestionViewModel;
