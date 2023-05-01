@@ -1,11 +1,12 @@
 import { CommandHandler, ICommand, ICommandHandler } from '@nestjs/cqrs';
 import { GameRepository } from '../../infrastructure/repository/game.repository';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { PublishQuestionDto } from '../dto/request/publish-question';
 
 export class PublishQuestionCommand implements ICommand {
   constructor(
     public readonly questionId: string,
-    public readonly publishStatus: boolean,
+    public readonly publishQuestionDto: PublishQuestionDto,
   ) {}
 }
 
@@ -19,10 +20,7 @@ export class PublishQuestionHandler
     const question = await this.gameRepo.getById(command.questionId);
     if (!question) throw new NotFoundException();
 
-    if (question.published === command.publishStatus)
-      throw new BadRequestException('already published');
-
-    question.published = command.publishStatus;
+    question.published = command.publishQuestionDto.published;
 
     return this.gameRepo.save(question);
   }

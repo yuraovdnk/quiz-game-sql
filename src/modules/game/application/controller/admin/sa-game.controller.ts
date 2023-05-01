@@ -25,6 +25,7 @@ import { SaFindGamesOptionsDto } from '../../dto/request/sa-find-games-options.d
 import { Question } from '../../../domain/entity/questions.entity';
 import { PublishQuestionCommand } from '../../use-cases/publish-question.case';
 import { PageDto } from '../../../../../common/utils/PageDto';
+import { PublishQuestionDto } from '../../dto/request/publish-question';
 
 @UseGuards(BasicAuthGuard)
 @Controller('sa/quiz/questions')
@@ -74,10 +75,10 @@ export class SaGameController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async publishQuestion(
     @Param('id', ParseUUIDPipe) questionId: string,
-    @Body('published', ParseBoolPipe) publishedStatus: boolean,
+    @Body() publishQuestionDto: PublishQuestionDto,
   ) {
     return this.commandBus.execute<PublishQuestionCommand, void>(
-      new PublishQuestionCommand(questionId, publishedStatus),
+      new PublishQuestionCommand(questionId, publishQuestionDto),
     );
   }
 }
