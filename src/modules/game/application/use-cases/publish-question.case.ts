@@ -1,6 +1,6 @@
 import { CommandHandler, ICommand, ICommandHandler } from '@nestjs/cqrs';
 import { GameRepository } from '../../infrastructure/repository/game.repository';
-import { NotFoundException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 export class PublishQuestionCommand implements ICommand {
   constructor(
@@ -18,6 +18,10 @@ export class PublishQuestionHandler
   async execute(command: PublishQuestionCommand): Promise<any> {
     const question = await this.gameRepo.getById(command.questionId);
     if (!question) throw new NotFoundException();
+
+    if (question.published === command.publishStatus)
+      throw new BadRequestException('already published');
+
     question.published = command.publishStatus;
 
     return this.gameRepo.save(question);

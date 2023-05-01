@@ -71,6 +71,7 @@ export class SaGameController {
   }
 
   @Put(':id/publish')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async publishQuestion(
     @Param('id', ParseUUIDPipe) questionId: string,
     @Body('published', ParseBoolPipe) publishedStatus: boolean,
