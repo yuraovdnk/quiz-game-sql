@@ -14,7 +14,7 @@ import { BanUserSubscriber } from '../../modules/users/domain/subscribers/banUse
         return {
           type: 'postgres',
           autoLoadEntities: true,
-          synchronize: true,
+          synchronize: false,
           subscribers: [BanUserSubscriber],
           extra: {
             poolSize: 4,
