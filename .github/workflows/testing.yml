@@ -36,11 +36,11 @@ jobs:
           JWT_SECRET: "123"
           SECRET_ACCESS_TOKEN: "AcTk"
           SECRET_REFRESH_TOKEN: "RfTk"
-          POSTGRES_HOST: 'localhost'
+          POSTGRES_HOST: 'snuffleupagus.db.elephantsql.com'
           POSTGRES_POST: 5432
-          POSTGRES_USER: 'postgres'
-          POSTGRES_PASSWORD: 'password'
-          POSTGRES_DATABASE: 'quiz-game'
+          POSTGRES_USER: 'rtpppdpr'
+          POSTGRES_PASSWORD: 'tEqfAo5CJwI-apwZL07zaZha7CVq61fo'
+          POSTGRES_DATABASE: 'rtpppdpr'
           
           
       
