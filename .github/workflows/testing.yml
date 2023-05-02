@@ -36,6 +36,11 @@ jobs:
           JWT_SECRET: "123"
           SECRET_ACCESS_TOKEN: "AcTk"
           SECRET_REFRESH_TOKEN: "RfTk"
+          POSTGRES_HOST: 'localhost'
+          POSTGRES_POST: 5432
+          POSTGRES_USER: 'postgres'
+          POSTGRES_PASSWORD: 'password'
+          POSTGRES_DATABASE: 'quiz-game'
           
           
       
