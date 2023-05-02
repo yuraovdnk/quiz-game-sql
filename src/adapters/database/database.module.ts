@@ -10,6 +10,7 @@ import { log } from 'util';
       useFactory: async (configService: ConfigService) => {
         console.log(process.env.NODE_ENV, 'ENVIROMNET');
         console.log(configService.get<string>('db.postgresUriDev'), 'ENVVV');
+        console.log(configService.get<string>('db.admin.userName'), 'ENVVV');
         return {
           type: 'postgres',
           autoLoadEntities: true,
