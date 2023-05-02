@@ -30,7 +30,7 @@ jobs:
         run: yarn test:e2e
         
         env:
-          POSTGRES_DEV: "postgres://postgres:password@localhost:5432/quiz-game"
+          POSTGRES_DEV: "postgresql://postgres:password@localhost:5432/quiz-game"
           
           
       
