@@ -1,53 +1,86 @@
-import { CreateQuestionDto } from '../../application/dto/request/create-question.dto';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Question } from '../../domain/entity/questions.entity';
+import { Game } from '../../domain/entity/game.entity';
 import { Repository } from 'typeorm';
-import { SaFindGamesOptionsDto } from '../../application/dto/request/sa-find-games-options.dto';
-import { SortedFieldsGame } from '../../application/types/game.types';
-import { PageDto } from '../../../../common/utils/PageDto';
 import { BaseRepository } from './baseRepository';
 
+import { Answer } from '../../domain/entity/answers.entity';
+
 @Injectable()
-export class GameRepository extends BaseRepository<Question> {
+export class GameRepository extends BaseRepository<Game> {
   constructor(
-    @InjectRepository(Question) private questionRepo: Repository<Question>,
+    @InjectRepository(Game) private gameRepo: Repository<Game>,
+    @InjectRepository(Answer) private answerRepo: Repository<Answer>,
   ) {
-    super(questionRepo);
+    super(gameRepo);
   }
 
-  async getAll(findOptions: SaFindGamesOptionsDto): Promise<PageDto<Question>> {
-    const [questions, totalCount] = await this.questionRepo
+  async getById(id: string): Promise<Game | null> {
+    return this.gameRepo.findOne({ where: { id }, relations: ['gameQuestions'] });
+  }
+
+  async getFreeGame() {
+    const game = await this.gameRepo.findOne({
+      where: { status: 'PendingSecondPlayer' },
+    });
+    return game;
+  }
+
+  async getUserGame(userId: string) {
+    const game = this.gameRepo
       .createQueryBuilder('g')
       .select()
       .where(
-        `g.body like :bodySearchTerm
-                and (:publishedStatus = 'all'
-                or (:publishedStatus = 'published' and g.published = true)
-                or (:publishedStatus = 'notPublished' and g.published = false))
-      `,
-        {
-          bodySearchTerm: `%${findOptions.bodySearchTerm}%`,
-          publishedStatus: findOptions.publishedStatus,
-        },
+        `(g.firstPlayer = :userId or g.secondPlayer = :userId) and (g.status ='Active' or g.status = 'PendingSecondPlayer') `,
+        { userId },
       )
-      .orderBy(`"${findOptions.sortByField(SortedFieldsGame)}"`, findOptions.order)
-      .limit(findOptions.pageSize)
-      .offset(findOptions.skip)
-      .getManyAndCount();
-    return new PageDto(questions, findOptions, totalCount);
+      .getOne();
+    return game;
   }
 
-  async getById(id: string): Promise<Question | null> {
-    return this.questionRepo.findOneBy({ id });
+  async create(userId: string) {
+    const game = Game.create(userId);
+    await this.save(game);
+    return game;
   }
 
-  async create(createQuestionDto: CreateQuestionDto): Promise<Question> {
-    const question = Question.create(
-      createQuestionDto.body,
-      createQuestionDto.correctAnswers,
-    );
-    await this.questionRepo.save(question);
-    return question;
+  async getActiveGame(userId: string) {
+    const game = this.gameRepo
+      .createQueryBuilder('g')
+      .leftJoinAndSelect('g.gameQuestions', 'gameQuestions')
+      .leftJoinAndSelect('gameQuestions.question', 'question')
+      .leftJoinAndSelect('g.answers', 'answers')
+      .where(
+        `(g.firstPlayer = :userId or g.secondPlayer = :userId) and g.status = 'Active'`,
+        { userId },
+      )
+      .getOne();
+    return game;
+  }
+
+  async getMyCurrentGame(userId: string) {
+    const game = await this.gameRepo
+      .createQueryBuilder('g')
+      .where(
+        `(g.firstPlayer = :userId or g.secondPlayer = :userId) and g.status != 'Finished' `,
+        { userId },
+      )
+      .leftJoinAndSelect('g.gameQuestions', 'gameQuestions')
+      .leftJoinAndMapMany(
+        'g.firstAnswers',
+        'g.answers',
+        'firstPlayerAnswers',
+        'g."firstPlayer" = "firstPlayerAnswers"."userId"',
+      )
+      .leftJoinAndMapMany(
+        'g.secondAnswers',
+        'g.answers',
+        'secondPlayerAnswers',
+        'g."secondPlayer" = "secondPlayerAnswers"."userId"',
+      )
+
+      .getOne();
+
+    return game;
   }
 }

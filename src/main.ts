@@ -10,6 +10,7 @@ import {
 } from './common/exceptions/exception.filter';
 
 export const createApp = async (app): Promise<INestApplication> => {
+  console.log('createAPp');
   app.enableCors();
   app.use(cookieParser());
   useContainer(app.select(AppModule), { fallbackOnErrors: true });

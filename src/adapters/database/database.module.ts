@@ -7,8 +7,6 @@ import { BanUserSubscriber } from '../../modules/users/domain/subscribers/banUse
   imports: [
     TypeOrmModule.forRootAsync({
       useFactory: async (configService: ConfigService) => {
-        console.log(process.env.POSTGRES_USERNAME, 'dev');
-        console.log(process.env.POSTGRES_DATABASE, 'dev');
         return {
           type: 'postgres',
           autoLoadEntities: true,
@@ -22,11 +20,6 @@ import { BanUserSubscriber } from '../../modules/users/domain/subscribers/banUse
           username: process.env.POSTGRES_USERNAME,
           password: process.env.POSTGRES_PASSWORD,
           database: process.env.POSTGRES_DATABASE,
-          ///
-          // url:
-          //   process.env.NODE_ENV === 'production'
-          //     ? configService.get<string>('db.postgresUriProduction')
-          //     : configService.get<string>('db.postgresUriDev'),
         };
       },
 

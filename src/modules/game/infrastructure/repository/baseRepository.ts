@@ -9,7 +9,4 @@ export class BaseRepository<T> {
   async delete(entity: T) {
     await this.repository.remove(entity);
   }
-  // async getById(id: string): Promise<T> {
-  //   return this.repository.findOneBy({ id } as unknown as FindOptionsWhere<T>);
-  // }
 }

@@ -1,5 +1,5 @@
 import { CommandHandler, ICommand, ICommandHandler } from '@nestjs/cqrs';
-import { GameRepository } from '../../infrastructure/repository/game.repository';
+import { QuestionsRepository } from '../../../infrastructure/repository/questions.repository';
 import { NotFoundException } from '@nestjs/common';
 
 export class DeleteQuestionCommand implements ICommand {
@@ -9,7 +9,7 @@ export class DeleteQuestionCommand implements ICommand {
 export class DeleteQuestionHandler
   implements ICommandHandler<DeleteQuestionCommand>
 {
-  constructor(private gameRepo: GameRepository) {}
+  constructor(private gameRepo: QuestionsRepository) {}
 
   async execute(command: DeleteQuestionCommand): Promise<any> {
     const question = await this.gameRepo.getById(command.questionId);

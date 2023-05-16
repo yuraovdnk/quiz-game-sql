@@ -1,7 +1,7 @@
 import { CommandHandler, ICommand, ICommandHandler } from '@nestjs/cqrs';
-import { GameRepository } from '../../infrastructure/repository/game.repository';
+import { QuestionsRepository } from '../../../infrastructure/repository/questions.repository';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { PublishQuestionDto } from '../dto/request/publish-question';
+import { PublishQuestionDto } from '../../dto/request/publish-question';
 
 export class PublishQuestionCommand implements ICommand {
   constructor(
@@ -14,7 +14,7 @@ export class PublishQuestionCommand implements ICommand {
 export class PublishQuestionHandler
   implements ICommandHandler<PublishQuestionCommand>
 {
-  constructor(private gameRepo: GameRepository) {}
+  constructor(private gameRepo: QuestionsRepository) {}
 
   async execute(command: PublishQuestionCommand): Promise<any> {
     const question = await this.gameRepo.getById(command.questionId);

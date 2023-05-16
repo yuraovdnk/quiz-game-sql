@@ -16,21 +16,24 @@ import {
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateQuestionDto } from '../../dto/request/create-question.dto';
 import { BasicAuthGuard } from '../../../../auth/application/strategies/basic.strategy';
-import { CreateQuestionCommand } from '../../use-cases/create-question.case';
-import { GameRepository } from '../../../infrastructure/repository/game.repository';
-import { DeleteQuestionCommand } from '../../use-cases/delete-question.case';
-import { UpdateQuestionCommand } from '../../use-cases/update-question.case';
+import { CreateQuestionCommand } from '../../use-cases/commands/create-question.case';
+import { QuestionsRepository } from '../../../infrastructure/repository/questions.repository';
+import { DeleteQuestionCommand } from '../../use-cases/commands/delete-question.case';
+import { UpdateQuestionCommand } from '../../use-cases/commands/update-question.case';
 import { UpdateQuestionDto } from '../../dto/request/update-question.dto';
 import { SaFindGamesOptionsDto } from '../../dto/request/sa-find-games-options.dto';
 import { Question } from '../../../domain/entity/questions.entity';
-import { PublishQuestionCommand } from '../../use-cases/publish-question.case';
+import { PublishQuestionCommand } from '../../use-cases/commands/publish-question.case';
 import { PageDto } from '../../../../../common/utils/PageDto';
 import { PublishQuestionDto } from '../../dto/request/publish-question';
 
 @UseGuards(BasicAuthGuard)
 @Controller('sa/quiz/questions')
 export class SaGameController {
-  constructor(private commandBus: CommandBus, private gameRepo: GameRepository) {}
+  constructor(
+    private commandBus: CommandBus,
+    private gameRepo: QuestionsRepository,
+  ) {}
 
   @Get()
   async getAll(
