@@ -10,10 +10,7 @@ import {
 import { JwtGuard } from '../../../../../common/guards/jwt.strategy';
 import { CommandBus } from '@nestjs/cqrs';
 import { CurrentUser } from '../../../../../common/decorators/current-user.decorator';
-import {
-  CreatePairCommand,
-  CreatePairHandler,
-} from '../../use-cases/commands/create-pair.case';
+import { CreatePairCommand } from '../../use-cases/commands/create-pair.case';
 import {
   SendAnswerCommand,
   SendAnswerHandler,

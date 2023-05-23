@@ -12,7 +12,6 @@ export class GameViewModel {
   finishGameDate: Date;
 
   constructor(game: Game) {
-    console.log(game);
     this.pairCreatedDate = game.pairCreatedDate;
     this.finishGameDate = game.finishGameDate;
     this.startGameDate = game.startGameDate;
@@ -20,19 +19,19 @@ export class GameViewModel {
     this.questions = game.gameQuestions.map((i) => {
       return new QuestionViewModel(i.id, i.question.body);
     });
-    this.firstPlayerProgress = new PlayerViewModel(
-      game.firstPlayerId,
-      game.firstPlayer.login,
-      game.answers,
-    );
-
-    this.secondPlayerProgress = game.secondPlayerId
-      ? new PlayerViewModel(
-          game.secondPlayerId,
-          game.secondPlayer.login,
-          game.answers,
-        )
-      : null;
+    // this.firstPlayerProgress = new PlayerViewModel(
+    //   game.firstPlayerId,
+    //   game.firstPlayer.login,
+    //   game.answers,
+    // );
+    //
+    // this.secondPlayerProgress = game.secondPlayerId
+    //   ? new PlayerViewModel(
+    //       game.secondPlayerId,
+    //       game.secondPlayer.login,
+    //       game.answers,
+    //     )
+    //   : null;
   }
 }
 

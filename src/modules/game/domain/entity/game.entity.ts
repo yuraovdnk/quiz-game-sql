@@ -3,6 +3,7 @@ import {
   Entity,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Question } from './questions.entity';
@@ -12,43 +13,35 @@ import { Answer } from './answers.entity';
 import { log } from 'util';
 import { ForbiddenException } from '@nestjs/common';
 import { User } from '../../../users/domain/entity/user.entity';
+import { GameScore } from './gameScores.entity';
 
 @Entity('Game')
 export class Game {
   private constructor() {}
-
   @PrimaryGeneratedColumn('uuid')
   id: string;
-
   @Column('uuid')
   firstPlayerId: string;
-
   @Column('uuid', { nullable: true })
   secondPlayerId: string;
-
   @Column('timestamp with time zone', { default: null })
   startGameDate: Date;
-
   @Column('timestamp with time zone', { default: null })
   finishGameDate: Date;
-
   @Column('timestamp with time zone', { default: () => 'CURRENT_TIMESTAMP' })
   pairCreatedDate;
-
   @Column('varchar')
   status: string;
-
-  @OneToMany(() => GameQuestions, (q) => q.game, { cascade: true })
-  gameQuestions: GameQuestions[];
-
   @ManyToOne(() => User, (user) => user.id)
   firstPlayer: User;
-
   @ManyToOne(() => User, (user) => user.id)
   secondPlayer: User;
-
+  @OneToMany(() => GameQuestions, (q) => q.game, { cascade: true })
+  gameQuestions: GameQuestions[];
   @OneToMany(() => Answer, (a) => a.game, { cascade: true })
   answers: Answer[];
+  @OneToMany(() => GameScore, (score) => score.game)
+  gameScore: GameScore;
 
   static create(userId: string) {
     const game = new Game();
@@ -69,14 +62,22 @@ export class Game {
   }
 
   sendAnswer(answer: string, userId: string) {
-    const userAnswers = this.answers.filter((item) => item.userId === userId);
+    const [currentUserAnswers, opponentAnswers] = this.answers.reduce(
+      ([userAcc, opponentAcc], item) => {
+        if (item.userId === userId) {
+          return [[...userAcc, item], opponentAcc];
+        }
+        return [userAcc, [...opponentAcc, item]];
+      },
+      [[], []],
+    );
 
-    if (userAnswers.length === this.gameQuestions.length) {
+    if (currentUserAnswers.length === this.gameQuestions.length) {
       throw new ForbiddenException(); ///TODO?
     }
 
     const currentQuestion = this.gameQuestions.find(
-      (i) => i.orderInGame === userAnswers.length + 1,
+      (i) => i.orderInGame === currentUserAnswers.length + 1,
     );
 
     const answerStatus = currentQuestion.question.correctAnswers.includes(answer)
@@ -87,12 +88,53 @@ export class Game {
       new Answer(userId, this.id, currentQuestion.questionId, answerStatus),
     );
 
-    this.checkIsFinish();
-  }
-  private checkIsFinish() {
-    if (this.gameQuestions.length * 2 === this.answers.length) {
+    if (this.answers.length === this.gameQuestions.length * 2) {
       this.status = GameStatus.Finished;
       this.finishGameDate = new Date(Date.now());
+      const scoresPlayers = this.calcScores(currentUserAnswers, opponentAnswers);
+      const scoreFirstUser = new GameScore(
+        userId,
+        this.id,
+        scoresPlayers.scoreCurrentUser,
+      );
+      const scoreSecondUser = new GameScore(
+        userId,
+        this.id,
+        scoresPlayers.scoreOpponent,
+      );
     }
+  }
+  private calcScores(currentUsersAnswers: Answer[], opponentUserAnswers: Answer[]) {
+    let currentUserScore = this.calcCorrectAnswers(currentUsersAnswers);
+    let opponentUserScore = this.calcCorrectAnswers(opponentUserAnswers);
+
+    const latestAnswerCurrentUser = currentUsersAnswers.reduce((a, b) =>
+      a.addedAt > b.addedAt ? a : b,
+    );
+    const latestAnswerOpponentUser = opponentUserAnswers.reduce((a, b) =>
+      a.addedAt > b.addedAt ? a : b,
+    );
+
+    if (
+      latestAnswerCurrentUser.addedAt > latestAnswerOpponentUser.addedAt &&
+      currentUserScore > 0
+    ) {
+      currentUserScore++;
+    } else if (
+      latestAnswerOpponentUser.addedAt > latestAnswerCurrentUser.addedAt &&
+      opponentUserScore > 0
+    ) {
+      opponentUserScore++;
+    }
+    return {
+      scoreCurrentUser: currentUserScore,
+      scoreOpponent: opponentUserScore,
+    };
+  }
+
+  private calcCorrectAnswers(answers: Answer[]): number {
+    return answers.reduce((score, item) => {
+      return item.answerStatus === AnswerStatus.Correct ? score++ : score;
+    }, 0);
   }
 }

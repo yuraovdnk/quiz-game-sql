@@ -27,6 +27,7 @@ export class CreatePairHandler implements ICommandHandler {
     const randomQuestions = await this.questionRepository.getRandom();
 
     game.startGame(command.userId, randomQuestions);
+
     await this.gameRepository.save(game);
     return game.id;
   }

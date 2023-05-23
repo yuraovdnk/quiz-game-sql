@@ -17,7 +17,9 @@ export class GameQueryRepository {
       .leftJoin('g.firstPlayer', 'firstPlayer')
       .leftJoin('g.secondPlayer', 'secondPlayer')
       .leftJoinAndSelect('g.answers', 'answers')
+
       .getOne();
+    return game;
     return new GameViewModel(game);
   }
 }

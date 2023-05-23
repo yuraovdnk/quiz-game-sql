@@ -5,6 +5,9 @@ import { Repository } from 'typeorm';
 import { BaseRepository } from './baseRepository';
 
 import { Answer } from '../../domain/entity/answers.entity';
+import { GameViewModel } from '../../application/dto/response/game.view-model';
+import { log } from 'util';
+import { GameScore } from '../../domain/entity/gameScores.entity';
 
 @Injectable()
 export class GameRepository extends BaseRepository<Game> {
@@ -13,10 +16,6 @@ export class GameRepository extends BaseRepository<Game> {
     @InjectRepository(Answer) private answerRepo: Repository<Answer>,
   ) {
     super(gameRepo);
-  }
-
-  async getById(id: string): Promise<Game | null> {
-    return this.gameRepo.findOne({ where: { id }, relations: ['gameQuestions'] });
   }
 
   async getFreeGame() {
@@ -31,7 +30,7 @@ export class GameRepository extends BaseRepository<Game> {
       .createQueryBuilder('g')
       .select()
       .where(
-        `(g.firstPlayer = :userId or g.secondPlayer = :userId) and (g.status ='Active' or g.status = 'PendingSecondPlayer') `,
+        `(g.firstPlayerId = :userId or g.secondPlayerId = :userId) and (g.status ='Active' or g.status = 'PendingSecondPlayer') `,
         { userId },
       )
       .getOne();
@@ -62,25 +61,15 @@ export class GameRepository extends BaseRepository<Game> {
     const game = await this.gameRepo
       .createQueryBuilder('g')
       .where(
-        `(g.firstPlayer = :userId or g.secondPlayer = :userId) and g.status != 'Finished' `,
+        `(g.firstPlayerId = :userId or g.secondPlayerId = :userId) and g.status != 'Finished' `,
         { userId },
       )
+      .addSelect(['firstPlayer.login', 'secondPlayer.login'])
       .leftJoinAndSelect('g.gameQuestions', 'gameQuestions')
-      .leftJoinAndMapMany(
-        'g.firstAnswers',
-        'g.answers',
-        'firstPlayerAnswers',
-        'g."firstPlayer" = "firstPlayerAnswers"."userId"',
-      )
-      .leftJoinAndMapMany(
-        'g.secondAnswers',
-        'g.answers',
-        'secondPlayerAnswers',
-        'g."secondPlayer" = "secondPlayerAnswers"."userId"',
-      )
-
+      .leftJoin('g.firstPlayer', 'firstPlayer')
+      .leftJoin('g.secondPlayer', 'secondPlayer')
+      .leftJoinAndSelect('g.answers', 'answers')
       .getOne();
-
-    return game;
+    return new GameViewModel(game);
   }
 }

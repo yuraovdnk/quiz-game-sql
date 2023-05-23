@@ -17,6 +17,7 @@ import { Answer } from './domain/entity/answers.entity';
 import { SendAnswerHandler } from './application/use-cases/commands/send-answer.case';
 import { GameQuestions } from './domain/entity/gameQuestions.entity';
 import { GameQueryRepository } from './infrastructure/repository/query-object/game.query.repository';
+import { GameScore } from './domain/entity/gameScores.entity';
 
 const useCases = [
   CreateQuestionHandler,
@@ -30,7 +31,7 @@ const useCases = [
   imports: [
     CqrsModule,
     UserModule,
-    TypeOrmModule.forFeature([Question, Game, Answer, GameQuestions]),
+    TypeOrmModule.forFeature([Question, Game, Answer, GameQuestions, GameScore]),
   ],
   controllers: [SaGameController, GameController],
   providers: [QuestionsRepository, GameRepository, GameQueryRepository, ...useCases],
