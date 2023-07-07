@@ -12,6 +12,7 @@ export class GameViewModel {
   finishGameDate: Date;
 
   constructor(game: Game) {
+    console.log(game);
     this.pairCreatedDate = game.pairCreatedDate;
     this.finishGameDate = game.finishGameDate;
     this.startGameDate = game.startGameDate;
