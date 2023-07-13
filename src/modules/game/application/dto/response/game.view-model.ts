@@ -1,5 +1,5 @@
-import { Answer } from '../../../domain/entity/answers.entity';
 import { Game } from '../../../domain/entity/game.entity';
+import { PlayerViewModel } from './player.view-model';
 
 export class GameViewModel {
   id: string;
@@ -19,40 +19,16 @@ export class GameViewModel {
     this.questions = game.gameQuestions.map((i) => {
       return new QuestionViewModel(i.id, i.question.body);
     });
-    // this.firstPlayerProgress = new PlayerViewModel(
-    //   game.firstPlayerId,
-    //   game.firstPlayer.login,
-    //   game.answers,
-    // );
-    //
-    // this.secondPlayerProgress = game.secondPlayerId
-    //   ? new PlayerViewModel(
-    //       game.secondPlayerId,
-    //       game.secondPlayer.login,
-    //       game.answers,
-    //     )
-    //   : null;
+    this.firstPlayerProgress = new PlayerViewModel(game.firstPlayer);
+    this.secondPlayerProgress = new PlayerViewModel(game.secondPlayer);
   }
 }
 
 class QuestionViewModel {
-  constructor(public id: string, public body: string) {}
-}
-
-class PlayerViewModel {
-  answers: Answer[];
-  player: {
-    id: string;
-    login: string;
-  };
-  score: number;
-
-  constructor(id: string, login: string, answers: Answer[]) {
-    this.player = {
-      id,
-      login,
-    };
-    this.answers = answers.filter((i) => i.userId === id);
-    this.score = 0;
+  id: string;
+  body: string;
+  constructor(id: string, body: string) {
+    this.id = id;
+    this.body = body;
   }
 }

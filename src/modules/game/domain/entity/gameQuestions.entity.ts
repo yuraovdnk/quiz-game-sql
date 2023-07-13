@@ -1,13 +1,4 @@
-import {
-  BeforeInsert,
-  Column,
-  Entity,
-  JoinTable,
-  ManyToOne,
-  OneToOne,
-  PrimaryColumn,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Game } from './game.entity';
 import { Question } from './questions.entity';
 
@@ -28,7 +19,7 @@ export class GameQuestions {
   @ManyToOne(() => Game)
   game: Game;
 
-  @ManyToOne(() => Question)
+  @ManyToOne(() => Question, { eager: true })
   question: Question;
 
   constructor(gameId: string, questionId: string, order: number) {

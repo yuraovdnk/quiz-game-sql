@@ -8,12 +8,14 @@ import { Answer } from '../../domain/entity/answers.entity';
 import { GameViewModel } from '../../application/dto/response/game.view-model';
 import { log } from 'util';
 import { GameScore } from '../../domain/entity/gameScores.entity';
+import { Player } from '../../domain/entity/player.entity';
 
 @Injectable()
 export class GameRepository extends BaseRepository<Game> {
   constructor(
     @InjectRepository(Game) private gameRepo: Repository<Game>,
     @InjectRepository(Answer) private answerRepo: Repository<Answer>,
+    @InjectRepository(Player) private playerRe: Repository<Player>,
   ) {
     super(gameRepo);
   }
@@ -26,7 +28,8 @@ export class GameRepository extends BaseRepository<Game> {
   }
 
   async getUserGame(userId: string) {
-    const game = this.gameRepo
+    console.log(userId);
+    const game = await this.gameRepo
       .createQueryBuilder('g')
       .select()
       .where(
@@ -34,11 +37,39 @@ export class GameRepository extends BaseRepository<Game> {
         { userId },
       )
       .getOne();
+    console.log(game);
     return game;
   }
 
-  async create(userId: string) {
-    const game = Game.create(userId);
+  async getUserGame2(userId: string) {
+    const game = await this.gameRepo.findOne({
+      loadEagerRelations: true,
+      relations: {
+        firstPlayer: { user: true, answers: true },
+        secondPlayer: { user: true, answers: true },
+        gameQuestions: true,
+      },
+      where: [{ firstPlayer: { userId } }, { secondPlayer: { userId } }],
+    });
+    //return game;
+    return new GameViewModel(game);
+  }
+  async activeGame2(userId: string) {
+    const game = await this.gameRepo.findOne({
+      loadEagerRelations: true,
+      relations: {
+        firstPlayer: { user: true, answers: true },
+        secondPlayer: { user: true, answers: true },
+        gameQuestions: true,
+      },
+      where: [{ firstPlayer: { userId } }, { secondPlayer: { userId } }],
+    });
+    return game;
+  }
+
+  async create(player: Player) {
+    const game = Game.create(player);
+    console.log(game);
     await this.save(game);
     return game;
   }
@@ -64,12 +95,18 @@ export class GameRepository extends BaseRepository<Game> {
         `(g.firstPlayerId = :userId or g.secondPlayerId = :userId) and g.status != 'Finished' `,
         { userId },
       )
-      .addSelect(['firstPlayer.login', 'secondPlayer.login'])
+      //.addSelect(['firstPlayer.login', 'secondPlayer.login'])
       .leftJoinAndSelect('g.gameQuestions', 'gameQuestions')
-      .leftJoin('g.firstPlayer', 'firstPlayer')
-      .leftJoin('g.secondPlayer', 'secondPlayer')
-      .leftJoinAndSelect('g.answers', 'answers')
+      .leftJoinAndSelect('g.firstPlayer', 'firstPlayer')
+      .leftJoinAndSelect('g.secondPlayer', 'secondPlayer')
+      //.leftJoinAndSelect('g.answers', 'answers')
       .getOne();
-    return new GameViewModel(game);
+    console.log(game);
+    return game;
+  }
+  async savePlayer(userId: string) {
+    const player = new Player(userId);
+    await this.playerRe.save(player);
+    return player;
   }
 }

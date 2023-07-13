@@ -1,7 +1,6 @@
 import { CommandHandler, ICommand, ICommandHandler } from '@nestjs/cqrs';
 import { GameRepository } from '../../../infrastructure/repository/game.repository';
 import { QuestionsRepository } from '../../../infrastructure/repository/questions.repository';
-import { ForbiddenException } from '@nestjs/common';
 
 export class SendAnswerCommand implements ICommand {
   constructor(public userId: string, public readonly answer: string) {}
@@ -14,13 +13,17 @@ export class SendAnswerHandler implements ICommandHandler {
     private questionsRepository: QuestionsRepository,
   ) {}
   async execute(command: SendAnswerCommand) {
-    const activeGame = await this.gameRepository.getActiveGame(command.userId);
+    const game = await this.gameRepository.activeGame2(command.userId);
 
-    if (!activeGame) throw new ForbiddenException();
+    game.sendAnswer(command.userId, command.answer);
+    // const activeGame = await this.gameRepository.getActiveGame(command.userId);
+    //
+    // if (!activeGame) throw new ForbiddenException();
+    //
+    // activeGame.sendAnswer(command.answer, command.userId);
+    //
 
-    activeGame.sendAnswer(command.answer, command.userId);
-
-    await this.gameRepository.save(activeGame);
-    return;
+    await this.gameRepository.save(game);
+    // return;
   }
 }

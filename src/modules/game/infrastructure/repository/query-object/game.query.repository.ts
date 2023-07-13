@@ -12,11 +12,11 @@ export class GameQueryRepository {
     const game = await this.gameRepo
       .createQueryBuilder('g')
       .where(`g.id = :userId`, { userId })
-      .addSelect(['firstPlayer.login', 'secondPlayer.login'])
+      //.addSelect(['firstPlayer.login', 'secondPlayer.login'])
       .leftJoinAndSelect('g.gameQuestions', 'gameQuestions')
-      .leftJoin('g.firstPlayer', 'firstPlayer')
-      .leftJoin('g.secondPlayer', 'secondPlayer')
-      .leftJoinAndSelect('g.answers', 'answers')
+      .leftJoinAndSelect('g.firstPlayer', 'firstPlayer')
+      .leftJoinAndSelect('g.secondPlayer', 'secondPlayer')
+      //.leftJoinAndSelect('g.answers', 'answers')
 
       .getOne();
     return game;

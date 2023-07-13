@@ -29,7 +29,7 @@ export class GameController {
 
   @Get('my-current')
   async getGame(@CurrentUser() userId: string) {
-    return this.gameRepo.getMyCurrentGame(userId);
+    return this.gameRepo.getUserGame2(userId);
   }
 
   @Post('connection')
@@ -41,6 +41,7 @@ export class GameController {
 
     return this.gameQueryRepo.getById(gameId);
   }
+
   @Post('my-current/answers')
   async sendAnswer(@CurrentUser() userId: string, @Body('answer') answer: string) {
     return this.commandBus.execute<SendAnswerCommand, SendAnswerHandler['execute']>(

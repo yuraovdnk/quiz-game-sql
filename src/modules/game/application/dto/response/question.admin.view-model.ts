@@ -1,6 +1,6 @@
 import { Question } from '../../../domain/entity/questions.entity';
 
-export class QuestionViewModel {
+export class QuestionAdminViewModel {
   id: string;
   body: string;
   correctAnswers: string[];

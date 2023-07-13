@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   OneToOne,
@@ -10,48 +11,64 @@ import { Question } from './questions.entity';
 import { AnswerStatus, GameStatus } from '../../application/types/game.types';
 import { GameQuestions } from './gameQuestions.entity';
 import { Answer } from './answers.entity';
-import { log } from 'util';
+import { v4 as uuid } from 'uuid';
+import { Player } from './player.entity';
 import { ForbiddenException } from '@nestjs/common';
-import { User } from '../../../users/domain/entity/user.entity';
-import { GameScore } from './gameScores.entity';
 
 @Entity('Game')
 export class Game {
   private constructor() {}
   @PrimaryGeneratedColumn('uuid')
   id: string;
-  @Column('uuid')
+
+  @Column('uuid', { nullable: true })
   firstPlayerId: string;
+
   @Column('uuid', { nullable: true })
   secondPlayerId: string;
+
   @Column('timestamp with time zone', { default: null })
   startGameDate: Date;
+
   @Column('timestamp with time zone', { default: null })
   finishGameDate: Date;
+
   @Column('timestamp with time zone', { default: () => 'CURRENT_TIMESTAMP' })
   pairCreatedDate;
+
   @Column('varchar')
-  status: string;
-  @ManyToOne(() => User, (user) => user.id)
-  firstPlayer: User;
-  @ManyToOne(() => User, (user) => user.id)
-  secondPlayer: User;
+  status: string; //ENUM
+
+  @OneToOne(() => Player, { cascade: true })
+  @JoinColumn()
+  firstPlayer: Player;
+
+  @OneToOne(() => Player, { cascade: true })
+  @JoinColumn()
+  secondPlayer: Player;
+
   @OneToMany(() => GameQuestions, (q) => q.game, { cascade: true })
   gameQuestions: GameQuestions[];
-  @OneToMany(() => Answer, (a) => a.game, { cascade: true })
-  answers: Answer[];
-  @OneToMany(() => GameScore, (score) => score.game)
-  gameScore: GameScore;
 
-  static create(userId: string) {
+  private currentPlayer(playerId: string) {
+    if (playerId === this.firstPlayer.userId) {
+      return this.firstPlayer;
+    } else if (playerId === this.secondPlayer.userId) {
+      return this.secondPlayer;
+    }
+    console.log('error');
+  }
+
+  static create(player: Player) {
     const game = new Game();
-    game.firstPlayerId = userId;
+    game.id = uuid();
+    game.firstPlayer = player;
     game.status = GameStatus.PendingSecondPlayer;
     return game;
   }
 
-  startGame(userId: string, questions: Question[]) {
-    this.secondPlayerId = userId;
+  startGame(player: Player, questions: Question[]) {
+    this.secondPlayer = player;
     this.startGameDate = new Date(Date.now());
     this.status = GameStatus.Active;
 
@@ -61,80 +78,74 @@ export class Game {
     );
   }
 
-  sendAnswer(answer: string, userId: string) {
-    const [currentUserAnswers, opponentAnswers] = this.answers.reduce(
-      ([userAcc, opponentAcc], item) => {
-        if (item.userId === userId) {
-          return [[...userAcc, item], opponentAcc];
-        }
-        return [userAcc, [...opponentAcc, item]];
-      },
-      [[], []],
-    );
+  // private calcScores(currentUsersAnswers: Answer[], opponentUserAnswers: Answer[]) {
+  //   let currentUserScore = this.calcCorrectAnswers(currentUsersAnswers);
+  //   let opponentUserScore = this.calcCorrectAnswers(opponentUserAnswers);
+  //
+  //   const latestAnswerCurrentUser = currentUsersAnswers.reduce((a, b) =>
+  //     a.addedAt > b.addedAt ? a : b,
+  //   );
+  //   const latestAnswerOpponentUser = opponentUserAnswers.reduce((a, b) =>
+  //     a.addedAt > b.addedAt ? a : b,
+  //   );
+  //
+  //   if (
+  //     latestAnswerCurrentUser.addedAt > latestAnswerOpponentUser.addedAt &&
+  //     currentUserScore > 0
+  //   ) {
+  //     currentUserScore++;
+  //   } else if (
+  //     latestAnswerOpponentUser.addedAt > latestAnswerCurrentUser.addedAt &&
+  //     opponentUserScore > 0
+  //   ) {
+  //     opponentUserScore++;
+  //   }
+  //   return {
+  //     scoreCurrentUser: currentUserScore,
+  //     scoreOpponent: opponentUserScore,
+  //   };
+  // }
+  //
+  // private calcCorrectAnswers(answers: Answer[]): number {
+  //   return answers.reduce((score, item) => {
+  //     return item.answerStatus === AnswerStatus.Correct ? score++ : score;
+  //   }, 0);
+  // }
 
-    if (currentUserAnswers.length === this.gameQuestions.length) {
-      throw new ForbiddenException(); ///TODO?
-    }
+  sendAnswer(playerId: string, answer: string) {
+    const currentPlayer = this.currentPlayer(playerId);
+    this.checkCountAnswers(currentPlayer.answers);
 
     const currentQuestion = this.gameQuestions.find(
-      (i) => i.orderInGame === currentUserAnswers.length + 1,
+      (i) => i.orderInGame === currentPlayer.answers.length + 1,
     );
 
     const answerStatus = currentQuestion.question.correctAnswers.includes(answer)
       ? AnswerStatus.Correct
       : AnswerStatus.Incorrect;
 
-    this.answers.push(
-      new Answer(userId, this.id, currentQuestion.questionId, answerStatus),
-    );
+    currentPlayer.answers.push(new Answer(currentQuestion.questionId, answerStatus));
+    if (answerStatus === AnswerStatus.Correct) {
+      currentPlayer.score += 1;
+    }
 
-    if (this.answers.length === this.gameQuestions.length * 2) {
+    if (this.isFinish()) {
       this.status = GameStatus.Finished;
       this.finishGameDate = new Date(Date.now());
-      const scoresPlayers = this.calcScores(currentUserAnswers, opponentAnswers);
-      const scoreFirstUser = new GameScore(
-        userId,
-        this.id,
-        scoresPlayers.scoreCurrentUser,
-      );
-      const scoreSecondUser = new GameScore(
-        userId,
-        this.id,
-        scoresPlayers.scoreOpponent,
-      );
     }
   }
-  private calcScores(currentUsersAnswers: Answer[], opponentUserAnswers: Answer[]) {
-    let currentUserScore = this.calcCorrectAnswers(currentUsersAnswers);
-    let opponentUserScore = this.calcCorrectAnswers(opponentUserAnswers);
 
-    const latestAnswerCurrentUser = currentUsersAnswers.reduce((a, b) =>
-      a.addedAt > b.addedAt ? a : b,
-    );
-    const latestAnswerOpponentUser = opponentUserAnswers.reduce((a, b) =>
-      a.addedAt > b.addedAt ? a : b,
-    );
-
-    if (
-      latestAnswerCurrentUser.addedAt > latestAnswerOpponentUser.addedAt &&
-      currentUserScore > 0
-    ) {
-      currentUserScore++;
-    } else if (
-      latestAnswerOpponentUser.addedAt > latestAnswerCurrentUser.addedAt &&
-      opponentUserScore > 0
-    ) {
-      opponentUserScore++;
+  private checkCountAnswers(answers: Answer[]) {
+    if (answers.length === this.gameQuestions.length) {
+      throw new ForbiddenException();
     }
-    return {
-      scoreCurrentUser: currentUserScore,
-      scoreOpponent: opponentUserScore,
-    };
   }
 
-  private calcCorrectAnswers(answers: Answer[]): number {
-    return answers.reduce((score, item) => {
-      return item.answerStatus === AnswerStatus.Correct ? score++ : score;
-    }, 0);
+  private isFinish(): boolean {
+    const countAllAnswers =
+      this.firstPlayer.answers.length + this.secondPlayer.answers.length;
+    return countAllAnswers === this.gameQuestions.length * 2;
   }
+
+  private bonusPoint() {}
 }

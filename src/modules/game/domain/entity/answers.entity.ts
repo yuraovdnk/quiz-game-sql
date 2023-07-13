@@ -1,17 +1,15 @@
 import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
 import { Game } from './game.entity';
 import { Question } from './questions.entity';
+import { Player } from './player.entity';
 
 @Entity('Answers')
 export class Answer {
   @PrimaryColumn('uuid')
-  gameId: string;
-
-  @PrimaryColumn('uuid')
   questionId: string;
 
   @PrimaryColumn('uuid')
-  userId: string;
+  playerId: string;
 
   @Column('character varying')
   answerStatus: string;
@@ -19,22 +17,14 @@ export class Answer {
   @Column('timestamp with time zone', { default: () => 'CURRENT_TIMESTAMP' })
   addedAt: Date;
 
-  @ManyToOne(() => Game)
-  game: Game;
+  @ManyToOne(() => Player)
+  player: Player;
 
   @ManyToOne(() => Question)
   question: Question;
 
-  constructor(
-    userId: string,
-    gameId: string,
-    questionId: string,
-    answerStatus: string,
-  ) {
-    this.userId = userId;
-    this.gameId = gameId;
+  constructor(questionId: string, answerStatus: string) {
     this.questionId = questionId;
-    this.userId = userId;
     this.answerStatus = answerStatus;
   }
 }

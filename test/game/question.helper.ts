@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { QuestionViewModel } from '../../src/modules/game/application/dto/response/question.view-model';
+import { QuestionAdminViewModel } from '../../src/modules/game/application/dto/response/question.admin.view-model';
 
 export class QuestionHelper {
   static async createQuestion(app: INestApplication) {
@@ -18,6 +18,6 @@ export class QuestionHelper {
     expect(question.body.updatedAt).toBeNull();
     expect(question.body.id).toBeDefined();
 
-    return question.body as QuestionViewModel;
+    return question.body as QuestionAdminViewModel;
   }
 }
